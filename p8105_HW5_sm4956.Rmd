@@ -207,3 +207,22 @@ power_mu_plot = sim_all_mu %>%
 
 It can be seen that as the true value of μ increases, the power of the test (proportion of times the null was rejected) also increases. Therefore, we can say that as the effect size increases, i.e., true value of μ goes away from null=0, the power of the test to reject the null also increases.
 
+Creating separate samples to see the average of when the null was rejected, and for the total average for all the values of μ. Making a final dataset avg_estimates to merge these separate datasets and view the average estimates of both the samples.
+```{r average}
+rejected_avg = sim_all_mu %>%
+  group_by(mu_value) %>%
+  filter (rejected == TRUE) %>%
+  summarise (mean_rejected = mean(estimate))
+
+all_avg = sim_all_mu %>%
+  group_by(mu_value) %>%
+  summarise (mean_all = mean(estimate))
+
+avg_estimates = full_join(rejected_avg, all_avg, by = "mu_value") %>%
+  pivot_longer(
+    mean_rejected:mean_all,
+    names_to = "Samples",
+    values_to = "average_estimates"
+  )
+
+```

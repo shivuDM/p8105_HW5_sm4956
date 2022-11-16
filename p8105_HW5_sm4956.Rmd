@@ -94,6 +94,7 @@ Describing the raw Homicides dataset:
 - The key variables in this data set are **`r colnames(homicide_raw_ds)`**. Some key variables include names of the homicide victims,their race, age, the cities and states these victims belonged to, and information about the criminal disposition, i.e., if there was no arrest, closed by arrest, or closed without arrest.
 
 Data wrangling to create a city_state variable (e.g. “Baltimore, MD”), summarizing within cities to obtain the total number of homicides and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
+Removing Tulsa_AL because of the wrong combination of city and state.
 ```{r summarizing for homicides}
 homicide_ds = homicide_raw_ds %>%
 unite('city_state',"city":"state", remove = FALSE)%>%
@@ -102,6 +103,7 @@ unite('city_state',"city":"state", remove = FALSE)%>%
                                   disposition == "Open/No arrest" ~ "Unsolved", 
                                   disposition == "Closed by arrest" ~ "Solved" )) %>%
   group_by(city_state) %>%
+  filter (city_state != "Tulsa_AL") %>%
   count(homi_type) %>%
   spread(key = homi_type, value = n)%>%
   mutate (total = Solved + Unsolved) %>%
@@ -125,3 +127,12 @@ baltimore_proportion =
   knitr::kable(baltimore_proportion)
 ```
 
+Estimating Homicide proportion for all cities using prop.test and getting estimate and 95% confidence intervals using Tidy pipeline. 
+```{r proportions for all cities}
+cities_proportion = homicide_ds %>%
+  mutate(city_prop = list(broom::tidy(prop.test(Unsolved, total, conf.level=0.95)))) %>%
+  unnest(city_prop)%>%
+  select (city_state, estimate, conf.low, conf.high)%>%
+  ungroup()
+ 
+```

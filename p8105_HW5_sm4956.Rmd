@@ -109,3 +109,19 @@ unite('city_state',"city":"state", remove = FALSE)%>%
   
 ```
 
+Filtering for Baltimore:
+```{r Baltimore homicides}
+baltimore_homi = homicide_ds %>%
+  filter(city_state == "Baltimore_MD")
+```
+
+Estimating Homicide proportion for Baltimore using prop.test and getting estimate and 95% confidence intervals using broom::tidy
+```{r Baltimore proportion using prop.test}
+baltimore_proportion = 
+  prop.test(baltimore_homi$Unsolved, baltimore_homi$total)%>%
+  broom::tidy() %>%
+  select (estimate, conf.low, conf.high)
+
+  knitr::kable(baltimore_proportion)
+```
+

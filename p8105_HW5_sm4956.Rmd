@@ -104,7 +104,8 @@ unite('city_state',"city":"state", remove = FALSE)%>%
   group_by(city_state) %>%
   count(homi_type) %>%
   spread(key = homi_type, value = n)%>%
-  mutate (total = Solved + Unsolved)
+  mutate (total = Solved + Unsolved) %>%
+  select (-Solved)
   
 ```
 

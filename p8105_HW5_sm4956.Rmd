@@ -127,7 +127,7 @@ baltimore_proportion =
   knitr::kable(baltimore_proportion)
 ```
 
-Estimating Homicide proportion for all cities using prop.test and getting estimate and 95% confidence intervals using Tidy pipeline. 
+Estimating Homicide proportion for each city using prop.test and getting estimate and 95% confidence intervals using Tidy pipeline. 
 ```{r proportions for all cities}
 cities_proportion = homicide_ds %>%
   mutate(city_prop = list(broom::tidy(prop.test(Unsolved, total, conf.level=0.95)))) %>%
@@ -135,4 +135,18 @@ cities_proportion = homicide_ds %>%
   select (city_state, estimate, conf.low, conf.high)%>%
   ungroup()
  
+```
+
+Plotting for the proportion estimate and 95% CI for each city, using geom_errorbar to get the 95% CI on the plot, organizing the cities according to the proportion of unsolved homicides in order.
+```{r plotting proportions for cities}
+plot_cities_prop = cities_proportion %>%
+  mutate (city_state = reorder (city_state, estimate)) %>%
+  ggplot(aes (x = city_state, y = estimate)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs (x = "City and State",
+        y = "Proportion estimate with 95% CI")
+  
+plot_cities_prop
 ```

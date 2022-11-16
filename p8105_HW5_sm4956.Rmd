@@ -182,3 +182,28 @@ sim_all_mu = tibble(
   unnest(mean_df) 
   
 ```
+
+Adding a variable to see if the null was rejected (TRUE) or not (FALSE) to the previous dataset sim_all_mu
+```{r variable for rejection of null}
+sim_all_mu = sim_all_mu %>%
+  mutate(
+    rejected = if_else (p.value < 0.05, TRUE, FALSE)
+  )
+```
+
+Making plot to show the proportion of times the null was rejected (the power of the test) on the y axis and the true value of μ on the x axis.
+```{r plotting for power and mu}
+power_mu_plot = sim_all_mu %>%
+  group_by(mu_value) %>%
+  summarise(power = sum(rejected)/5000) %>%
+  ggplot(aes(x = mu_value, y = power)) +
+  geom_point (aes(color = mu_value)) +
+  geom_line() + 
+  labs (title = "Plot for Power vs True value of mu",
+        x = "True value of Mu",
+        y = "Power")
+  power_mu_plot
+```
+
+It can be seen that as the true value of μ increases, the power of the test (proportion of times the null was rejected) also increases. Therefore, we can say that as the effect size increases, i.e., true value of μ goes away from null=0, the power of the test to reject the null also increases.
+

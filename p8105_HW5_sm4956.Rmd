@@ -226,3 +226,40 @@ avg_estimates = full_join(rejected_avg, all_avg, by = "mu_value") %>%
   )
 
 ```
+
+Creating plots showing the average estimate of μ^ on the y axis and the true value of μ on the x axis, and overlay showing the average estimate of μ^ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis.
+```{r plot for average estimate of μ^ and true value of μ}
+all_avg_plot = all_avg %>%
+  ggplot (aes(x= mu_value, y= mean_all)) +
+  geom_point (alpha = 0.5) + 
+  geom_line () +
+labs (title = "Plot for true value of μ vs Average estimate of μ^ for all estimates",
+        x = "True value of μ",
+        y = "Average estimate of μ^")
+all_avg_plot
+```
+
+```{r plot for average estimate of μ^ and true value of μ when Null rejected}
+rejected_avg_plot = rejected_avg %>%
+  ggplot (aes(x= mu_value, y= mean_rejected)) +
+  geom_point (alpha = 0.5) + 
+  geom_line () +
+labs (title = "Plot for true value of μ vs Average estimate of μ^ when null was rejected",
+        x = "True value of μ",
+        y = "Average estimate of μ^ for Null-rejected")
+rejected_avg_plot
+```
+
+```{r overlay plot for average estimate of μ^ and true value of μ when Null rejected}
+overlay_avg_plot = avg_estimates %>%
+  ggplot (aes(x= mu_value, y= average_estimates, group = Samples)) +
+  geom_point (aes(color = Samples), alpha = 0.5) + 
+  geom_line (aes(color = Samples)) +
+labs (title = "Overlay Plot for true value of μ vs Average estimate of μ^ in sample for Null-rejected",
+        x = "True value of μ",
+        y = "Average estimate of μ^ for Null-rejected")
+overlay_avg_plot
+```
+
+The overlay plot shows that the true mean and average estimate of mean are not same/ diverge when the mean/average value is small (i.e., for values 1,2,3). They converge or are approximately equal when the mean gets larger (i.e., for values 4,5,6). 
+The reason is that when the true mean is greater or away from the null, higher proportion of rejection due to larger effect size. So, when the sample average of μ^ across tests for which the null is rejected is larger, it converges with the effect size/ true value of μ in terms of power to reject the null.
